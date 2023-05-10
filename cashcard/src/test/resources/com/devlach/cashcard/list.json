@@ -1,5 +1,17 @@
 [
-  {"id": 62, "amount": 123.45 },
-  {"id": 63, "amount": 1.00 },
-  {"id": 64, "amount": 150.00 }
+  {
+    "id": 62,
+    "amount": 123.45,
+    "owner": "sarah1"
+  },
+  {
+    "id": 63,
+    "amount": 1.00,
+    "owner": "sarah1"
+  },
+  {
+    "id": 64,
+    "amount": 150.00,
+    "owner": "sarah1"
+  }
 ]
