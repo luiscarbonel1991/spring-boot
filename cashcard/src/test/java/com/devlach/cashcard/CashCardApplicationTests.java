@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -162,6 +164,32 @@ class CashCardApplicationTests {
         ResponseEntity<String> response = restTemplate
                 .withBasicAuth("sarah1", "abc123")
                 .getForEntity("/cashcards/66", String.class); // kumar2's data
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    @DirtiesContext
+    void shouldUpdateAnExistingCashCard() {
+        CashCard cashCardUpdate = new CashCard(null, 19.99, "sarah1");
+        HttpEntity<CashCard> request = new HttpEntity<>(cashCardUpdate);
+        ResponseEntity<CashCard> response = restTemplate
+                .withBasicAuth("sarah1", "abc123")
+                .exchange("/cashcards/64", HttpMethod.PUT, request, CashCard.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        CashCard cashCardBody = response.getBody();
+
+        assertThat(cashCardBody).isNotNull();
+        assertThat(cashCardBody.id()).isEqualTo(64);
+        assertThat(cashCardBody.amount()).isEqualTo(19.99);
+    }
+
+    @Test
+    void shouldNotUpdateACashCardThatDoesNotExist() {
+        CashCard unknownCard = new CashCard(null, 19.99, null);
+        HttpEntity<CashCard> request = new HttpEntity<>(unknownCard);
+        ResponseEntity<Void> response = restTemplate
+                .withBasicAuth("sarah1", "abc123")
+                .exchange("/cashcards/99999", HttpMethod.PUT, request, Void.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 }

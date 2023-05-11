@@ -25,9 +25,7 @@ public class CashController {
 
     @GetMapping("/{requestedId}")
     public ResponseEntity<CashCard> findById(@PathVariable Long requestedId, Principal principal) {
-        Optional<CashCard> cashCardOptional = Optional.ofNullable(
-                cashCardRepository.findByIdAndOwner(requestedId, principal.getName())
-        );
+        Optional<CashCard> cashCardOptional = findCashCard(requestedId, principal);
         return cashCardOptional
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -53,5 +51,17 @@ public class CashController {
         CashCard savedCashCard = cashCardRepository.save(cashCardWithOwner);
         URI location = ubc.path("/cashcards/{id}").buildAndExpand(savedCashCard.id()).toUri();
         return ResponseEntity.created(location).body(savedCashCard);
+    }
+
+    @PutMapping("/{requestedId}")
+    public ResponseEntity<CashCard> putCashCard(@PathVariable Long requestedId, @RequestBody CashCard cashCardUpdate, Principal principal) {
+        Optional<CashCard> cashCardOptional = findCashCard(requestedId, principal);
+        return cashCardOptional
+                .map(cashCard -> ResponseEntity.ok(cashCardRepository.save(new CashCard(cashCard.id(), cashCardUpdate.amount(), principal.getName()))))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    private Optional<CashCard> findCashCard(Long requestedId, Principal principal) {
+        return Optional.ofNullable(cashCardRepository.findByIdAndOwner(requestedId, principal.getName()));
     }
 }
