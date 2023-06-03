@@ -1,8 +1,16 @@
 package rewards;
 
+import config.RewardsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 // TODO-00 : In this lab, you are going to exercise the following:
 // - Understanding how auto-configuration is triggered in Spring Boot application
@@ -35,6 +43,9 @@ import org.springframework.boot.SpringApplication;
 // TODO-13 (Optional) : Follow the instruction in the lab document.
 //           The section titled "Build and Run using Command Line tools".
 
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+@Import(RewardsConfig.class)
+@EnableConfigurationProperties(RewardsRecipientProperties.class)
 public class RewardsApplication {
     static final String SQL = "SELECT count(*) FROM T_ACCOUNT";
 
@@ -68,4 +79,17 @@ public class RewardsApplication {
     //   represents a single conditional statement in the "JdbcTemplateAutoConfiguration"
     //   and "DataSourceAutoConfiguration" classes.
 
+    @Bean
+    public CommandLineRunner runner(JdbcTemplate jdbcTemplate) {
+        return args -> {
+            logger.info("Hello, there are {} accounts", jdbcTemplate.queryForObject(SQL, Integer.class));
+        };
+    }
+
+    @Bean
+    public CommandLineRunner recipientRunner(RewardsRecipientProperties properties) {
+        return args -> {
+            logger.info("Recipient name: {}", properties.getName());
+        };
+    }
 }

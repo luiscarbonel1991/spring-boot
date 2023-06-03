@@ -25,6 +25,11 @@
 
         <!-- TO-DO-02 : Refactor from discrete Spring Framework
              dependencies to JDBC and Test Spring Boot Starters -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+>
 
         <!-- Needed for the Spring JdbcTemplate -->
         <dependency>
@@ -57,6 +62,10 @@
          <plugins>
             <!-- TO-DO-01 : Add the Spring Boot Plugin - see detailed instructions
                 for the XML you need. -->
+             <plugin>
+                 <groupId>org.springframework.boot</groupId>
+                 <artifactId>spring-boot-maven-plugin</artifactId>
+             </plugin>
 
             <!-- Ensure resources are handled correctly -->
             <plugin>
